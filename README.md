@@ -1,8 +1,5 @@
 LibSpace - Library Seat & Room Booking System
-React
-Vite
-TailwindCSS
-Zustand
+React / Vite / TailwindCSS / Zustand / Firebase
 
 A robust, full-stack React-based reservation system developed for managing university library study spaces.
 
@@ -27,13 +24,13 @@ Notifications: Sonner
 
 To run this project on your local machine:
 
-Clone the repository
+1. Clone the repository
+2. Install dependencies:
 
-Install dependencies:
-bash
 npm install
 
-Start the development server:
+3. Start the development server:
+
 npm run dev
 
 Open http://localhost:5173 in your browser.
