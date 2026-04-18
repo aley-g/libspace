@@ -46,7 +46,7 @@ const Navbar = () => {
             <div className="flex-shrink-0 flex items-center">
               <Link to="/" className="flex items-center gap-2 text-primary font-bold text-xl">
                 <BookOpen className="text-primary" />
-                <span>LibSpace</span>
+                <span>CampusDesk</span>
               </Link>
             </div>
             <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
