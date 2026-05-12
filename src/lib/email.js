@@ -27,3 +27,28 @@ export const sendBookingConfirmation = async (userEmail, userName, roomName, dat
     return false;
   }
 };
+
+export const sendCancellationNotification = async (userEmail, userName, roomName, date, time) => {
+  if (!PUBLIC_KEY || PUBLIC_KEY === 'your_public_key') {
+    console.log("EmailJS mock: Sending cancellation to", userEmail);
+    return true;
+  }
+
+  try {
+    const templateParams = {
+      to_email: userEmail,
+      to_name: userName,
+      room_name: roomName,
+      booking_date: date,
+      booking_time: time,
+      message: `Your booking for ${roomName} on ${date} at ${time} has been cancelled.`,
+    };
+
+    // We use the same template for simplicity, but the message differs.
+    await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
+    return true;
+  } catch (error) {
+    console.error("EmailJS Error:", error);
+    return false;
+  }
+};

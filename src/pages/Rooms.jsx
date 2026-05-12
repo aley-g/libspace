@@ -5,6 +5,8 @@ import { useBookingStore } from '../store/bookingStore';
 import { Search, Filter, Users, Monitor, Calendar as CalendarIcon, Clock, ChevronRight } from 'lucide-react';
 import { format, addDays } from 'date-fns';
 import { toast } from 'sonner';
+import { sendBookingConfirmation } from '../lib/email';
+import { isBookingTimeValid } from '../lib/timeUtils';
 
 // Fallback images based on room type
 const roomImages = {
@@ -35,14 +37,29 @@ const Rooms = () => {
 
   const handleBook = async (e) => {
     e.preventDefault();
+
+    if (!isBookingTimeValid(bookingDate, startTime)) {
+      toast.error('You cannot book a time in the past for today.');
+      return;
+    }
+
+    if (endTime <= startTime) {
+      toast.error('End time must be after start time.');
+      return;
+    }
+
     try {
-      addBooking({
+      await addBooking({
         userId: user.id,
         roomId: selectedRoom.id,
         date: bookingDate,
         startTime,
         endTime
       });
+      
+      // Send confirmation email asynchronously (do not block UI)
+      sendBookingConfirmation(user.email, user.name, selectedRoom.name, bookingDate, startTime);
+      
       toast.success(`${selectedRoom.name} booked successfully.`);
       setSelectedRoom(null);
     } catch (error) {

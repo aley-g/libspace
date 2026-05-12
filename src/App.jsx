@@ -1,6 +1,9 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { useAuthStore } from './store/authStore';
+import { useRoomStore } from './store/roomStore';
+import { useBookingStore } from './store/bookingStore';
 import Layout from './components/layout/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -24,6 +27,19 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 };
 
 function App() {
+  const listenToRooms = useRoomStore(state => state.listenToRooms);
+  const listenToBookings = useBookingStore(state => state.listenToBookings);
+
+  useEffect(() => {
+    const unsubRooms = listenToRooms();
+    const unsubBookings = listenToBookings();
+
+    return () => {
+      if (unsubRooms) unsubRooms();
+      if (unsubBookings) unsubBookings();
+    };
+  }, [listenToRooms, listenToBookings]);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -44,7 +60,7 @@ function App() {
             </ProtectedRoute>
           } />
           <Route path="manage-rooms" element={
-            <ProtectedRoute allowedRoles={['facility_manager']}>
+            <ProtectedRoute allowedRoles={['facility_manager', 'librarian']}>
               <ManageRooms />
             </ProtectedRoute>
           } />

@@ -10,7 +10,7 @@ const Layout = () => {
       </main>
       <footer className="bg-white border-t border-gray-200 mt-auto py-6">
         <div className="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500">
-          &copy; {new Date().getFullYear()} LibSpace Booking System. All rights reserved.
+          &copy; {new Date().getFullYear()} CampusDesk Booking System. All rights reserved.
         </div>
       </footer>
     </div>

@@ -6,9 +6,19 @@ import { Search, Calendar, Clock, MapPin, XCircle, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const AllBookings = () => {
-  const { bookings, cancelBooking } = useBookingStore();
+  const { bookings, cancelBooking, markAsNoShow, markAsCompleted } = useBookingStore();
   const { rooms } = useRoomStore();
   const [searchTerm, setSearchTerm] = useState('');
+
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'confirmed': return 'bg-blue-100 text-blue-700';
+      case 'cancelled': return 'bg-red-100 text-red-700';
+      case 'completed': return 'bg-green-100 text-green-700';
+      case 'no-show': return 'bg-orange-100 text-orange-700';
+      default: return 'bg-gray-100 text-gray-700';
+    }
+  };
 
   // Sort bookings by newest date first
   const allBookings = [...bookings].sort((a, b) => 
@@ -25,6 +35,20 @@ const AllBookings = () => {
     if (window.confirm('As a librarian, you are about to cancel this booking. Proceed?')) {
       cancelBooking(bookingId);
       toast.success('Booking cancelled successfully');
+    }
+  };
+
+  const handleNoShow = (bookingId) => {
+    if (window.confirm('Mark this booking as No-Show?')) {
+      markAsNoShow(bookingId);
+      toast.success('Booking marked as No-Show');
+    }
+  };
+
+  const handleCompleted = (bookingId) => {
+    if (window.confirm('Mark this booking as Completed?')) {
+      markAsCompleted(bookingId);
+      toast.success('Booking marked as Completed');
     }
   };
 
@@ -72,16 +96,14 @@ const AllBookings = () => {
               ) : (
                 filteredBookings.map(booking => {
                   const room = getRoom(booking.roomId);
-                  const isUpcoming = new Date(`${booking.date}T${booking.endTime}`) > new Date();
+                  const isUpcoming = new Date(`${booking.date}T${booking.startTime}`) > new Date();
                   const isActive = booking.status === 'confirmed';
 
                   return (
                     <tr key={booking.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4">
-                        <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${
-                          booking.status === 'confirmed' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                        }`}>
-                          {booking.status === 'confirmed' ? 'Confirmed' : 'Cancelled'}
+                        <span className={`px-2.5 py-1 text-xs font-medium rounded-full capitalize ${getStatusColor(booking.status)}`}>
+                          {booking.status.replace('-', ' ')}
                         </span>
                       </td>
                       <td className="px-6 py-4 font-medium text-gray-900">
@@ -108,6 +130,22 @@ const AllBookings = () => {
                             <Trash2 size={14} />
                             Cancel
                           </button>
+                        )}
+                        {isActive && !isUpcoming && (
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => handleCompleted(booking.id)}
+                              className="text-green-600 hover:text-green-700 transition-colors inline-flex items-center gap-1 text-xs font-medium bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-lg"
+                            >
+                              Completed
+                            </button>
+                            <button
+                              onClick={() => handleNoShow(booking.id)}
+                              className="text-orange-600 hover:text-orange-700 transition-colors inline-flex items-center gap-1 text-xs font-medium bg-orange-50 hover:bg-orange-100 px-3 py-1.5 rounded-lg"
+                            >
+                              No-Show
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>

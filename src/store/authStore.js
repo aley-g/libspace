@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { auth } from '../lib/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from 'firebase/auth';
 
 // For demo purposes, we allow forcing a login with a mock user
 const MOCK_USERS = {
@@ -111,6 +111,22 @@ export const useAuthStore = create(
             }, 
             loading: false 
           });
+        } catch (error) {
+          set({ error: error.message, loading: false });
+          throw error;
+        }
+      },
+
+      resetPassword: async (email) => {
+        set({ loading: true, error: null });
+        if (!auth) {
+          set({ error: "Email service not configured.", loading: false });
+          throw new Error("Auth not configured");
+        }
+        
+        try {
+          await sendPasswordResetEmail(auth, email);
+          set({ loading: false });
         } catch (error) {
           set({ error: error.message, loading: false });
           throw error;

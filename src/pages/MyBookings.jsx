@@ -4,6 +4,7 @@ import { useRoomStore } from '../store/roomStore';
 import { format, parseISO } from 'date-fns';
 import { Calendar, Clock, MapPin, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { sendCancellationNotification } from '../lib/email';
 
 const MyBookings = () => {
   const { user } = useAuthStore();
@@ -16,7 +17,15 @@ const MyBookings = () => {
 
   const handleCancel = (bookingId) => {
     if (window.confirm('Are you sure you want to cancel this booking?')) {
+      const booking = userBookings.find(b => b.id === bookingId);
+      const room = getRoom(booking.roomId);
+      
       cancelBooking(bookingId);
+      
+      if (booking && room) {
+        sendCancellationNotification(user.email, user.name, room.name, booking.date, booking.startTime);
+      }
+      
       toast.success('Booking cancelled successfully');
     }
   };
@@ -56,15 +65,6 @@ const MyBookings = () => {
                   }`}>
                     {booking.status === 'confirmed' ? 'Confirmed' : 'Cancelled'}
                   </span>
-                  {isActive && isUpcoming && (
-                    <button
-                      onClick={() => handleCancel(booking.id)}
-                      className="text-gray-400 hover:text-red-500 transition-colors"
-                      title="Cancel Booking"
-                    >
-                      <XCircle size={20} />
-                    </button>
-                  )}
                 </div>
 
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -87,6 +87,16 @@ const MyBookings = () => {
                     </div>
                   )}
                 </div>
+
+                {isActive && isUpcoming && (
+                  <button
+                    onClick={() => handleCancel(booking.id)}
+                    className="mt-6 w-full py-2.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors border border-red-100"
+                  >
+                    <XCircle size={18} />
+                    Cancel Reservation
+                  </button>
+                )}
               </div>
             );
           })}
