@@ -125,12 +125,13 @@ const ManageRooms = () => {
           className="px-6 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 flex items-center gap-2"
         >
           <Plus size={20} />
-          Add New Room
+          Add Space/Seat
         </button>
       </div>
 
       <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
-        <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[800px]">
           <thead>
             <tr className="bg-gray-50/50 border-b border-gray-100">
               <th className="p-5 font-semibold text-gray-600">Room Name</th>
@@ -172,6 +173,7 @@ const ManageRooms = () => {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {showModal && (
@@ -180,7 +182,7 @@ const ManageRooms = () => {
             <button onClick={() => setShowModal(false)} className="absolute top-6 right-6 text-gray-400 hover:text-gray-700">
               <X size={24} />
             </button>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">{editingRoom ? 'Edit Room' : 'Add New Room'}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{editingRoom ? 'Edit Space/Seat' : 'Add New Space/Seat'}</h2>
             
             <form onSubmit={handleSaveRoom} className="space-y-4">
               <div>
@@ -191,11 +193,10 @@ const ManageRooms = () => {
                   onChange={e => setFormData({...formData, name: e.target.value})} 
                   placeholder="e.g. Study Room A"
                   className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
-                  required
                 />
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1">Room Type</label>
                   <select 
@@ -206,6 +207,8 @@ const ManageRooms = () => {
                     <option value="study">Study Room</option>
                     <option value="meeting">Meeting Room</option>
                     <option value="lab">Computer Lab</option>
+                    <option value="seat">Individual Seat</option>
+                    <option value="reading hall">Reading Hall</option>
                   </select>
                 </div>
                 <div>
@@ -216,7 +219,6 @@ const ManageRooms = () => {
                     value={formData.capacity} 
                     onChange={e => setFormData({...formData, capacity: e.target.value})} 
                     className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
-                    required
                   />
                 </div>
               </div>
@@ -248,7 +250,7 @@ const ManageRooms = () => {
                   Cancel
                 </button>
                 <button type="submit" className="flex-1 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
-                  {editingRoom ? 'Save Changes' : 'Create Room'}
+                  {editingRoom ? 'Save Changes' : 'Create'}
                 </button>
               </div>
             </form>

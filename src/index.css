@@ -63,6 +63,8 @@
   
   body {
     background-color: var(--background);
+    background-image: url('/bg-pattern.svg');
+    background-attachment: fixed;
     color: var(--foreground);
     font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     -webkit-font-smoothing: antialiased;

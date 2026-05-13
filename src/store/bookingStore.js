@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { collection, onSnapshot, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useNotificationStore } from './notificationStore';
+import { hasTimeOverlap } from '../utils/validation';
 
 export const useBookingStore = create((set, get) => ({
   bookings: [],
@@ -18,36 +19,14 @@ export const useBookingStore = create((set, get) => ({
   
   addBooking: async (booking) => {
     const state = get();
-    // Conflict resolution
-    const newStart = new Date(`${booking.date}T${booking.startTime}`);
-    const newEnd = new Date(`${booking.date}T${booking.endTime}`);
-    
-    const hasConflict = state.bookings.some(b => {
-      if (b.roomId !== booking.roomId || b.status === 'cancelled') return false;
-      if (b.date !== booking.date) return false;
-      
-      const existingStart = new Date(`${b.date}T${b.startTime}`);
-      const existingEnd = new Date(`${b.date}T${b.endTime}`);
-      
-      return (newStart < existingEnd && newEnd > existingStart);
-    });
-
-    if (hasConflict) {
+    const roomBookings = state.bookings.filter(b => b.roomId === booking.roomId);
+    if (hasTimeOverlap(roomBookings, booking)) {
       throw new Error("This room is already booked for the selected time.");
     }
 
     // User time overlap conflict
-    const hasUserTimeConflict = state.bookings.some(b => {
-      if (b.userId !== booking.userId || b.status === 'cancelled') return false;
-      if (b.date !== booking.date) return false;
-      
-      const existingStart = new Date(`${b.date}T${b.startTime}`);
-      const existingEnd = new Date(`${b.date}T${b.endTime}`);
-      
-      return (newStart < existingEnd && newEnd > existingStart);
-    });
-
-    if (hasUserTimeConflict) {
+    const userBookings = state.bookings.filter(b => b.userId === booking.userId);
+    if (hasTimeOverlap(userBookings, booking)) {
       throw new Error("You already have a reservation at this time in another room.");
     }
 

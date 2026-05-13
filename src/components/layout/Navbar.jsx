@@ -2,14 +2,15 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useNotificationStore } from '../../store/notificationStore';
-import { BookOpen, LogOut, User, LayoutDashboard, Calendar, CalendarCheck, Settings, Bell, CheckCircle2 } from 'lucide-react';
+import { BookOpen, LogOut, User, LayoutDashboard, Calendar, CalendarCheck, Settings, Bell, CheckCircle2, Menu, X } from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout } = useAuthStore();
-  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotificationStore();
+  const { notifications, markAsRead, markAllAsRead } = useNotificationStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [showNotifications, setShowNotifications] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const notificationRef = useRef(null);
 
   useEffect(() => {
@@ -37,7 +38,7 @@ const Navbar = () => {
     ];
 
     if (user?.role === 'student' || user?.role === 'librarian') {
-      links.push({ name: 'Rooms', path: '/rooms', icon: <BookOpen size={18} /> });
+      links.push({ name: 'Spaces & Seats', path: '/rooms', icon: <BookOpen size={18} /> });
     }
 
     if (user?.role === 'student') {
@@ -63,7 +64,7 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link to="/" className="flex items-center gap-2 text-primary font-bold text-xl">
+              <Link to="/" className="flex items-center gap-2 text-primary font-bold text-xl" onClick={() => setIsMobileMenuOpen(false)}>
                 <BookOpen className="text-primary" />
                 <span>CampusDesk</span>
               </Link>
@@ -156,8 +157,69 @@ const Navbar = () => {
               </button>
             </div>
           </div>
+
+          {/* Mobile menu button */}
+          <div className="flex items-center sm:hidden gap-2">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="p-2 text-gray-400 hover:text-primary relative transition-colors"
+            >
+              <Bell size={24} />
+              {userUnreadCount > 0 && <span className="absolute top-1 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>}
+            </button>
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 text-gray-400 hover:text-primary transition-colors"
+            >
+              {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Mobile Navigation Menu */}
+      {isMobileMenuOpen && (
+        <div className="sm:hidden border-t border-gray-200 bg-gray-50/90 backdrop-blur-md animate-in slide-in-from-top-2 shadow-xl absolute w-full left-0 z-40">
+          <div className="pt-2 pb-3 space-y-1 px-4">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                to={link.path}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-base font-bold transition-colors ${
+                  location.pathname.startsWith(link.path)
+                    ? 'bg-primary text-white shadow-md shadow-primary/20'
+                    : 'text-gray-700 hover:bg-white border border-transparent hover:border-gray-200'
+                }`}
+              >
+                {link.icon}
+                {link.name}
+              </Link>
+            ))}
+          </div>
+          <div className="pt-4 pb-6 border-t border-gray-200 px-4 bg-white">
+            <div className="flex items-center gap-4 px-2 mb-5">
+              <div className="bg-primary/10 p-3 rounded-2xl text-primary">
+                <User size={24} />
+              </div>
+              <div>
+                <div className="text-lg font-extrabold text-gray-900">{user?.name}</div>
+                <div className="text-sm font-semibold text-gray-500 capitalize">{user?.role?.replace('_', ' ')}</div>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                handleLogout();
+              }}
+              className="flex items-center justify-center gap-3 w-full px-4 py-3.5 rounded-xl text-base font-bold text-red-600 bg-red-50 hover:bg-red-100 transition-colors border border-red-100"
+            >
+              <LogOut size={20} />
+              Sign Out
+            </button>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

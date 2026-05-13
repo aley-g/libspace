@@ -27,15 +27,6 @@ const Dashboard = () => {
   // Available Rooms (Randomly pick some active ones for the widget)
   const availableNow = rooms.filter(r => r.status === 'active').slice(0, 3);
 
-  // Chart Data: Bookings by Room Type
-  const bookingsByType = rooms.reduce((acc, room) => {
-    const count = bookings.filter(b => b.roomId === room.id).length;
-    if (count > 0) {
-      acc.push({ name: room.type, value: count });
-    }
-    return acc;
-  }, []);
-
   const COLORS = ['#1e3a8a', '#3b82f6', '#93c5fd', '#bfdbfe'];
 
   // Chart Data: Most booked rooms
@@ -161,7 +152,7 @@ const Dashboard = () => {
                     onClick={() => navigate('/rooms')}
                     className="px-6 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition-colors flex items-center gap-2"
                   >
-                    Find a Room <ArrowRight size={18} />
+                    Find a Space <ArrowRight size={18} />
                   </button>
                 </div>
               )}
@@ -203,7 +194,7 @@ const Dashboard = () => {
                     <BookOpen size={24} />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-500">Active Rooms</p>
+                    <p className="text-sm font-semibold text-gray-500">Active Spaces</p>
                     <p className="text-xl font-extrabold text-gray-900">{activeRooms} <span className="text-sm font-medium text-gray-400">/ {rooms.length}</span></p>
                   </div>
                 </div>
@@ -226,7 +217,7 @@ const Dashboard = () => {
               </div>
               <h3 className="text-lg font-bold mb-2 relative z-10">Need a quiet space?</h3>
               <p className="text-sm text-gray-300 mb-6 relative z-10 leading-relaxed">
-                Study rooms are highly requested during exam weeks. Make sure to book up to 14 days in advance!
+                Study spaces are highly requested during exam weeks. Make sure to book up to 14 days in advance!
               </p>
               <button onClick={() => navigate('/rooms')} className="w-full py-3 bg-white text-gray-900 font-bold rounded-xl hover:bg-gray-100 transition-colors relative z-10">
                 Book Now

@@ -9,16 +9,28 @@ const initialRooms = [
   { id: 'r4', name: 'Computer Lab Alpha', type: 'lab', capacity: 20, equipment: ['PCs', 'Dual Monitors', 'High-Speed Internet'], status: 'maintenance' },
 ];
 
-export const useRoomStore = create((set, get) => ({
+export const useRoomStore = create((set) => ({
   rooms: [],
   listenToRooms: () => {
     const roomsRef = collection(db, 'rooms');
     
-    // Check if empty, if so, seed initial data
     getDocs(roomsRef).then(snapshot => {
       if (snapshot.empty) {
         initialRooms.forEach(room => {
           setDoc(doc(db, 'rooms', room.id), room);
+        });
+      } else {
+        // Ensure new seats are added if they don't exist yet
+        const existingIds = snapshot.docs.map(d => d.id);
+        const newSeats = [
+          { id: 's1', name: 'Quiet Zone - Desk 1', type: 'seat', capacity: 1, equipment: ['Power Outlet', 'Desk Lamp'], status: 'active' },
+          { id: 's2', name: 'Quiet Zone - Desk 2', type: 'seat', capacity: 1, equipment: ['Power Outlet', 'Desk Lamp'], status: 'active' },
+          { id: 's3', name: 'Reading Hall - Seat A', type: 'seat', capacity: 1, equipment: ['Ergonomic Chair', 'Reading Light'], status: 'active' }
+        ];
+        newSeats.forEach(seat => {
+          if (!existingIds.includes(seat.id)) {
+            setDoc(doc(db, 'rooms', seat.id), seat);
+          }
         });
       }
     }).catch(console.error);

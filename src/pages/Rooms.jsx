@@ -13,6 +13,8 @@ const roomImages = {
   study: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80',
   meeting: 'https://images.unsplash.com/photo-1505409859467-3a796fd5798e?auto=format&fit=crop&w=800&q=80',
   lab: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=800&q=80',
+  seat: 'https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=800&q=80',
+  'reading hall': 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=80',
   default: 'https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&w=800&q=80'
 };
 
@@ -72,7 +74,7 @@ const Rooms = () => {
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Library Rooms</h1>
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Library Spaces & Seats</h1>
           <p className="text-gray-500 mt-2 text-lg">Find the perfect space for studying or meetings.</p>
         </div>
         
@@ -81,7 +83,7 @@ const Rooms = () => {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/50" size={20} />
             <input
               type="text"
-              placeholder="Search rooms..."
+              placeholder="Search spaces & seats..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-gray-700 font-medium placeholder:font-normal"
@@ -97,6 +99,8 @@ const Rooms = () => {
               <option value="study">Study Room</option>
               <option value="meeting">Meeting Room</option>
               <option value="lab">Computer Lab</option>
+              <option value="seat">Individual Seat</option>
+              <option value="reading hall">Reading Hall</option>
             </select>
             <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/50" size={20} />
           </div>
@@ -106,7 +110,10 @@ const Rooms = () => {
       {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredRooms.map(room => {
-          const image = room.imageUrl || roomImages[room.type] || roomImages.default;
+          let image = room.imageUrl || roomImages[room.type] || roomImages.default;
+          if (!room.imageUrl && room.name.toLowerCase().includes('reading hall')) {
+            image = 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=80';
+          }
           
           return (
             <div 
@@ -160,7 +167,7 @@ const Rooms = () => {
                 >
                   {room.status === 'active' ? (
                     <>
-                      Book Room
+                      Book Space/Seat
                       <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
                     </>
                   ) : 'Temporarily Closed'}
@@ -185,7 +192,6 @@ const Rooms = () => {
                   <CalendarIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={20} />
                   <input
                     type="date"
-                    required
                     min={format(new Date(), 'yyyy-MM-dd')}
                     max={format(addDays(new Date(), 14), 'yyyy-MM-dd')}
                     value={bookingDate}
@@ -195,14 +201,13 @@ const Rooms = () => {
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Start Time</label>
                   <div className="relative">
                     <Clock className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={20} />
                     <input
                       type="time"
-                      required
                       value={startTime}
                       onChange={(e) => setStartTime(e.target.value)}
                       className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none font-medium text-gray-700"
@@ -215,7 +220,6 @@ const Rooms = () => {
                     <Clock className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={20} />
                     <input
                       type="time"
-                      required
                       value={endTime}
                       onChange={(e) => setEndTime(e.target.value)}
                       className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none font-medium text-gray-700"

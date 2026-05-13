@@ -34,6 +34,13 @@ const Login = () => {
         setIsForgotPassword(false);
       } catch (err) {
         console.error(err);
+        if (err.code === 'auth/invalid-email') {
+          toast.error('Please enter a valid email address.');
+        } else if (err.code === 'auth/user-not-found' || err.message.includes('not found')) {
+          toast.error('No account found with this email address.');
+        } else {
+          toast.error('Failed to send reset email. Please try again.');
+        }
       }
       return;
     }
@@ -152,7 +159,6 @@ const Login = () => {
                   </div>
                   <input
                     type="text"
-                    required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="block w-full pl-12 pr-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all sm:text-sm font-medium"
@@ -172,7 +178,6 @@ const Login = () => {
                 </div>
                 <input
                   type="email"
-                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="block w-full pl-12 pr-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all sm:text-sm font-medium"
@@ -203,7 +208,6 @@ const Login = () => {
                   </div>
                   <input
                     type="password"
-                    required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="block w-full pl-12 pr-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all sm:text-sm font-medium"
